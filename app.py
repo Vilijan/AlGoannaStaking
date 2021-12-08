@@ -31,7 +31,7 @@ Downloading process:
 st.sidebar.write(description)
 st.sidebar.warning('The downloading takes around couple of minutes.')
 if st.sidebar.button('Updated the latest staked stats'):
-    download_latest_stats()
+    download_latest_stats(staking_period_days=required_staking_days)
 
 latest_data = pd.read_csv('latest_staked_stats.csv').to_csv().encode('utf-8')
 st.sidebar.download_button(

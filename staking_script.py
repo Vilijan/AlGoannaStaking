@@ -3,7 +3,7 @@ from retrieve_latest_data import latest_asset_transfer
 from datetime import datetime
 
 
-def download_latest_stats():
+def download_latest_stats(staking_period_days: int = 56):
     asa_df = pd.read_csv('data/algoanna_asas.csv')
     staking_df = pd.read_csv('data/staking_data.csv')
 
@@ -13,15 +13,11 @@ def download_latest_stats():
     staking_df = staking_df[staking_df['Wallet Address'].isin(wallet_addresses)].reset_index(drop=True)
     staking_df['asa_id'] = staking_df['ASA ID'].apply(lambda x: int(x))
 
-    STAKING_PERIOD_DAYS = 56
     data = []
     columns = ['asa_id', 'name', 'latest_transfer_date', 'tx_id', 'staked_date', 'not_moved_days', 'staked_days',
                'eligible']
 
     for asa_idx, asa_id in enumerate(asa_df.asa_id.unique()):
-
-        if asa_idx % 10 == 0:
-            print(asa_idx)
 
         latest_txn = latest_asset_transfer(asa_id)
 
@@ -65,8 +61,8 @@ def download_latest_stats():
         asa_owner = latest_txn.receiver if latest_txn.amount == 1 else latest_txn.close_address
         is_eligible = 'No'
 
-        if txn_difference.days >= STAKING_PERIOD_DAYS and \
-                days_staked.days >= STAKING_PERIOD_DAYS and \
+        if txn_difference.days >= staking_period_days and \
+                days_staked.days >= staking_period_days and \
                 asa_owner == staked_wallet:
             is_eligible = 'Yes'
 
